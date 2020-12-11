@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QuestionsAndResponses.Data;
+using QuestionsAndResponses.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +10,15 @@ namespace QuestionsAndResponses.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUsersRepository _db;
 
-        public UsersController(ApplicationDbContext db)
+        public UsersController(IUsersRepository db)
         {
             this._db = db;
         }
         public IActionResult Index()
         {
-            IEnumerable<Models.User> Users = _db.Users;
+            IEnumerable<Models.User> Users = _db.GetAll();
             return View(Users);
         }
 
@@ -31,11 +32,16 @@ namespace QuestionsAndResponses.Controllers
         [HttpPost]
         public IActionResult Create(Models.User user)
         {
-            user.CreatedIn = DateTime.Now;
-            if (_db.Users.Where(u => u.EMail == user.EMail).Count() == 0)
+            var users = _db.SearchAll(new Repositories.Filters.UserFilter
             {
-                _db.Users.Add(user);
-                _db.SaveChanges();
+                EMail = user.EMail
+            });
+            user.CreatedIn = DateTime.Now;
+
+
+            if (users.Count() == 0)
+            {
+                _db.Save(user);
                 return RedirectToAction(nameof(Index));
             }
             else 
@@ -49,7 +55,7 @@ namespace QuestionsAndResponses.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var user = _db.Users.Find(id);
+            var user = _db.GetItem(id);
             return View(user);
         }
 
@@ -58,12 +64,10 @@ namespace QuestionsAndResponses.Controllers
         {
             try
             {
-                var current = _db.Users.Find(user.Id);
+                var current = _db.GetItem(user.Id);
                 if(current.Password == user.Password)
                 {
-                    current.Name = user.Name;
-                    current.EMail = user.EMail;
-                    _db.SaveChanges();
+                    _db.Save(user);
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -82,7 +86,7 @@ namespace QuestionsAndResponses.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var user = _db.Users.Find(id);
+            var user = _db.GetItem(id);
             return View(user);
         }
 
@@ -91,8 +95,7 @@ namespace QuestionsAndResponses.Controllers
         {
             try
             {
-                _db.Remove(user);
-                _db.SaveChanges();
+                _db.Delete(user);
                 return RedirectToAction(nameof(Index));
             }
             catch

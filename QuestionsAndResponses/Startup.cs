@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QuestionsAndResponses.Data;
+using QuestionsAndResponses.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,10 @@ namespace QuestionsAndResponses
                         Configuration.GetConnectionString("DefaultConnection")
                     )
             );
+
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<IResponseRepository, ResponseRepository>();
 
 
             services.AddControllersWithViews();

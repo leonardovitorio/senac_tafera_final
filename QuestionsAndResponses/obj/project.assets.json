@@ -4467,11 +4467,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\dotnetcore\\senac\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
+      "projectUniqueName": "C:\\dotnetcore\\senac\\tarefa\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
       "projectName": "QuestionsAndResponses",
-      "projectPath": "C:\\dotnetcore\\senac\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
+      "projectPath": "C:\\dotnetcore\\senac\\tarefa\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
       "packagesPath": "C:\\Users\\leona\\.nuget\\packages\\",
-      "outputPath": "C:\\dotnetcore\\senac\\QuestionsAndResponses\\obj\\",
+      "outputPath": "C:\\dotnetcore\\senac\\tarefa\\QuestionsAndResponses\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",

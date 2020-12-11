@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "f7XlmvBZkYjtD/4PpZDR1VMdoy+h9/KK55MeMlinbOaJ3wOUEXxge9rhrCnkrEl8FNPnVdfW4fFFz75f4dEysA==",
+  "dgSpecHash": "/07jFjczElhuGYG92zC+RqcWjKFJJhQzSr8qg0vKN/h5BBrM45IuT/xov2k21KFFa2KAQ9fII5nCscLiMD9iHA==",
   "success": true,
-  "projectFilePath": "C:\\dotnetcore\\senac\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
+  "projectFilePath": "C:\\dotnetcore\\senac\\tarefa\\QuestionsAndResponses\\QuestionsAndResponses.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\leona\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\leona\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
