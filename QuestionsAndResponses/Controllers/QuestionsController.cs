@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using QuestionsAndResponses.Data;
+using QuestionsAndResponses.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,24 @@ namespace QuestionsAndResponses.Controllers
 {
     public class QuestionsController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUsersRepository usersRep;
+        private readonly IQuestionRepository questionRep;
+        private readonly IResponseRepository responseRep;
 
-        public QuestionsController(ApplicationDbContext db)
+        public QuestionsController(IUsersRepository usersRep, IQuestionRepository questionRep, IResponseRepository responseRep)
         {
-            this._db = db;
+            this.usersRep = usersRep;
+            this.questionRep = questionRep;
+            this.responseRep = responseRep;
         }
-        public IActionResult Index()
+        public IActionResult Index(string text)
         {
-            IEnumerable<Models.Question> questions = _db.Questions;
+            var questions = questionRep.SearchAll(new Repositories.Filters.QuestionFilter { 
+                Description = text
+            });
             foreach(var question in questions)
             {
-                question.User = _db.Users.Find(question.UserId);
+                question.User = usersRep.GetItem(question.UserId);
             }
             return View(questions);
         }
@@ -32,11 +39,11 @@ namespace QuestionsAndResponses.Controllers
             var question = new Models.Question();
 
             var list = new List<SelectListItem>();
-            foreach(var user in _db.Users)
+            foreach(var user in usersRep.GetAll())
             {
                 list.Add(new SelectListItem
                 {
-                    Text = user.Name + "(" + user.EMail + ")",
+                    Text = user.Name + " (" + user.EMail + ")",
                     Value = user.Id.ToString()
                 });
             }
@@ -48,18 +55,18 @@ namespace QuestionsAndResponses.Controllers
         [HttpPost]
         public IActionResult Create(Models.Question question)
         {
-            question.CreatedIn = DateTime.Now;
-            _db.Questions.Add(question);
-            _db.SaveChanges();
+            questionRep.Save(question);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var question = _db.Questions.Find(id);
-            question.User = _db.Users.Find(question.UserId);
-            question.Responses = _db.Responses.Where(resp => resp.QuestionId == question.Id).ToList();
+            var question = questionRep.GetItem(id);
+            question.User = usersRep.GetItem(question.UserId);
+            question.Responses = responseRep.SearchAll(new Repositories.Filters.ResponseFilter() { 
+                QuestionId = question.Id
+            }).ToList();
             return View(question);
         }
 
@@ -68,8 +75,7 @@ namespace QuestionsAndResponses.Controllers
         {
             try
             {
-                _db.Update(question);
-                _db.SaveChanges();
+                questionRep.Save(question);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -82,7 +88,7 @@ namespace QuestionsAndResponses.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var question = _db.Questions.Find(id);
+            var question = questionRep.GetItem(id);
             return View(question);
         }
 
@@ -91,8 +97,7 @@ namespace QuestionsAndResponses.Controllers
         {
             try
             {
-                _db.Remove(question);
-                _db.SaveChanges();
+                questionRep.Delete(question);
                 return RedirectToAction(nameof(Index));
             }
             catch

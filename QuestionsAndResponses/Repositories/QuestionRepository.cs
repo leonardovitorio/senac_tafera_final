@@ -36,6 +36,7 @@ namespace QuestionsAndResponses.Repositories
         {
             if(item.Id == 0)
             {
+                item.CreatedIn = DateTime.Now;
                 context.Questions.Add(item);
             }
             else
@@ -49,7 +50,7 @@ namespace QuestionsAndResponses.Repositories
         public IEnumerable<Question> SearchAll(Filters.QuestionFilter filter)
         {
             IEnumerable<Question> response = context.Questions;
-            if (filter.UserId != null)
+            if (filter.UserId != 0)
             {
                 response = response.Where(x => x.UserId == filter.UserId);
             }

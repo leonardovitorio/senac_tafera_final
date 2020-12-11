@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using QuestionsAndResponses.Data;
+using QuestionsAndResponses.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,16 @@ namespace QuestionsAndResponses.Controllers
 {
     public class ResponsesController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUsersRepository usersRep;
+        private readonly IQuestionRepository questionRep;
+        private readonly IResponseRepository responseRep;
 
-        public ResponsesController(ApplicationDbContext db)
+
+        public ResponsesController(IUsersRepository usersRep, IQuestionRepository questionRep, IResponseRepository responseRep)
         {
-            this._db = db;
-        }
-        public IActionResult Index()
-        {
-            IEnumerable<Models.Response> responses = _db.Responses;
-            return View(responses);
+            this.usersRep = usersRep;
+            this.questionRep = questionRep;
+            this.responseRep = responseRep;
         }
 
         [HttpGet]
@@ -29,11 +30,11 @@ namespace QuestionsAndResponses.Controllers
             response.QuestionId = questionId;
 
             var list = new List<SelectListItem>();
-            foreach (var user in _db.Users)
+            foreach (var user in usersRep.GetAll())
             {
                 list.Add(new SelectListItem
                 {
-                    Text = user.Name + "(" + user.EMail + ")",
+                    Text = user.Name + " (" + user.EMail + ")",
                     Value = user.Id.ToString()
                 });
             }
@@ -45,57 +46,8 @@ namespace QuestionsAndResponses.Controllers
         [HttpPost]
         public IActionResult Create(Models.Response response)
         {
-            response.CreatedIn = DateTime.Now;
-            _db.Responses.Add(response);
-            _db.SaveChanges();
+            responseRep.Save(response);
             return Redirect("/Questions/Edit/"+response.QuestionId);
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            var response = _db.Questions.Find(id);
-            return View(response);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(Models.Response response)
-        {
-            try
-            {
-                _db.Update(response);
-                _db.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(response);
-            }
-            
-        }
-
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            var response = _db.Questions.Find(id);
-            return View(response);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(Models.Response response)
-        {
-            try
-            {
-                _db.Remove(response);
-                _db.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View(response);
-            }
-
-            
         }
     }
 }

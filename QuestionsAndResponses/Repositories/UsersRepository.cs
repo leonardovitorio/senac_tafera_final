@@ -36,9 +36,10 @@ namespace QuestionsAndResponses.Repositories
         {
             if(item.Id == 0)
             {
+                item.CreatedIn = DateTime.Now;
                 context.Users.Add(item);
             }
-            else
+            else 
             {
                 var user = GetItem(item.Id);
                 user.EMail = item.EMail;
